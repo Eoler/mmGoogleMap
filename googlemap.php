@@ -1,6 +1,6 @@
 <?php
 /* mm_widget_googlemap
- * @version 0.9.1
+ * @version 0.9.2
  * @description Shows an interactive Google Map with two-way geolocation sync and autocompleted PoI search field
  * @author Danilo Cuculić (eoler@castus.me)
  *

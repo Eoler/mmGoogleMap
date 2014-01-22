@@ -8,14 +8,14 @@ function googlemaptv(fldName, elmSection, locDefault) {
   if (deflatlng == '') deflatlng = locDefault;
   var arrloc = deflatlng.split(',');
   
-  var mapopts = {
+  var defmapopts = {
     minZoom: 5, zoom: 15, maxZoom: 25,
     center: new google.maps.LatLng(arrloc[0], arrloc[1]),
     mapTypeId: google.maps.MapTypeId.HYBRID,
     draggable: true,
     scrollwheel: true
   };
-  var gmap = new google.maps.Map(elmSection.find('.mmwidgetGoogleMap_'+fldName).get(0), mapopts);
+  var gmap = new google.maps.Map(elmSection.find('.mmwidgetGoogleMap_'+fldName).get(0), defmapopts);
   var gmarker = new google.maps.Marker({
     position: new google.maps.LatLng(arrloc[0], arrloc[1]),
     map: gmap,
@@ -34,11 +34,12 @@ function googlemaptv(fldName, elmSection, locDefault) {
 
   $j('#geoloc_'+fldName).geocomplete({
     details: '#sect_'+fldName,
-    detailsAttribute: 'rel'
+    detailsAttribute: 'rel',
+    types: ['geocode','establishment']
   }).bind("geocode:result", function(evt, rslt){
     gmap.getStreetView().setVisible(false);
-    gmarker.setPosition(rslt.geometry.location);
     gmap.panTo(rslt.geometry.location);
+    gmarker.setPosition(rslt.geometry.location);
   });
 
 }
