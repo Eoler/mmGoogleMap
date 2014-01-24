@@ -1,21 +1,19 @@
 
-function googlemaptv(fldName, elmSection, locDefault) {
+function googlemaptv(fldName, elmSection, optsMap) {
 
   var elmfield = $j('#'+fldName);
   elmfield.css({width:"33%"}).attr('rel', 'location');
 
   var deflatlng = elmfield.val();
-  if (deflatlng == '') deflatlng = locDefault;
+  if (deflatlng == '') deflatlng = optsMap.center;
   var arrloc = deflatlng.split(',');
-  
   var defmapopts = {
-    minZoom: 5, zoom: 15, maxZoom: 25,
-    center: new google.maps.LatLng(arrloc[0], arrloc[1]),
     mapTypeId: google.maps.MapTypeId.HYBRID,
-    draggable: true,
-    scrollwheel: true
+    center: new google.maps.LatLng(arrloc[0], arrloc[1])
   };
-  var gmap = new google.maps.Map(elmSection.find('.mmwidgetGoogleMap_'+fldName).get(0), defmapopts);
+  var gmap = new google.maps.Map(elmSection.find('.mmwidgetGoogleMap_'+fldName).get(0),
+    $j.extend(defmapopts, optsMap.gmapOptions)
+  );
   var gmarker = new google.maps.Marker({
     position: new google.maps.LatLng(arrloc[0], arrloc[1]),
     map: gmap,

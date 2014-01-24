@@ -1,6 +1,6 @@
 <?php
 /* mm_widget_googlemap
- * @version 0.9.9
+ * @version 1.0.0
  * @description upgrades template variable by showing an interactive Google Map and autocompleted geolocation search field
  * @author Danilo Cuculić (eoler@castus.me)
  *
@@ -13,7 +13,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
     'height' => "450",
     'center' => "52.5,13.5", // default: Rijeka, Croatia
     'gmapOptions' => array(
-      'minZoom' => 15,
+      'minZoom' => 5,
       'zoom' => 15,
       'maxZoom' => 25,
       'draggable' => true,
@@ -28,6 +28,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
     if (is_array($config)) {
       $mapopts = array_replace_recursive($defmapopts, $config);
     }
+    $jsopts = json_encode($mapopts);
     if (intval($mapopts['width']) > 0) $mapopts['width'] .= "px";
     if (intval($mapopts['height']) > 0) $mapopts['height'] .= "px";
 		$output = "//  -------------- GoogleMap widget ------------- \n";
@@ -39,7 +40,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
       elmfield.parents('.tab-page:first').append(elmsection);
       elmfield.insertBefore('.mmwidgetGoogleMap_{$fieldName}');
       \$j('<input type=\"text\" id=\"geoloc_{$fieldName}\" name=\"geoloc_{$fieldName}\" tvtype=\"text\" style=\"width:60%; float:right;\">').insertAfter(elmfield);
-      window.pagemapsloaded = function(){ googlemaptv('{$fieldName}', elmsection, '{$mapopts['center']}'); };
+      window.pagemapsloaded = function(){ googlemaptv('{$fieldName}', elmsection, {$jsopts}); };
     function loadGmapscript(){
       var script = document.createElement('script');
       script.type = 'text/javascript';
