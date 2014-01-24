@@ -7,10 +7,15 @@ and autocompleting search field based on Places library for GoogleMaps.
 Requires PHP5.3+
 
 
+Installation
+------------
+Unzip to assets/plugins/managermanager/widgets/googlemap
+
+
 Usage
 -----
 ```php
-mm_widget_googlemap("tplvar_latlong" ...);
+mm_widget_googlemap("tplvar_name", "role_id", "template_ids", "options_arr");
 ```
 
 
@@ -27,6 +32,10 @@ Contributors
 
 Changelog
 ---------
+
+### 1.0.0 (2014-01-24)
+- added configuration options parameter
+- added GoogleMaps options propagation and defaults extension
 
 ### 0.9.2 (2014-01-22)
 - added business establishments to searched locations
