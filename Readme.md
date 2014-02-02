@@ -15,7 +15,7 @@ Unzip to assets/plugins/managermanager/widgets/googlemap
 Usage
 -----
 ```php
-mm_widget_googlemap("tplvar_name", "role_id", "template_ids", "options_arr");
+mm_widget_googlemap("tplvar_name", "role_ids", "template_ids", "config_arr");
 ```
 
 
@@ -32,6 +32,10 @@ Contributors
 
 Changelog
 ---------
+
+### 1.0.1 (2014-02-02)
+- parametrized GoogleMaps API loading with key (gapikey)
+- added GoogleMaps marker positioning event config option (default: rightclick)
 
 ### 1.0.0 (2014-01-24)
 - added configuration options parameter

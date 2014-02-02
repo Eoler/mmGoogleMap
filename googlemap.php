@@ -32,6 +32,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
     $jsopts = json_encode($mapopts);
     if (intval($mapopts['width']) > 0) $mapopts['width'] .= "px";
     if (intval($mapopts['height']) > 0) $mapopts['height'] .= "px";
+    $gapikey_url = empty($mapopts['gapikey']) ? "" : "&key=".$mapopts['gapikey'];
 		$output = "//  -------------- GoogleMap widget ------------- \n";
 		$output .= includeJs($modx->config['base_url'] .'assets/plugins/managermanager/widgets/googlemap/googlemap.js');
     $output .= "      var elmfield = \$j('#{$fieldName}');
@@ -47,7 +48,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
       function loadGmapscript(){
         var script = document.createElement('script');
         script.type = 'text/javascript';
-        script.src = '//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places';
+        script.src = '//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places{$gapikey_url}';
         document.body.appendChild(script);
       }
       window.onload = loadGmapscript;\n";
