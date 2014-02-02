@@ -23,7 +23,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
     var glatlng = evt.latLng;
     elmfield.val(glatlng.lat() +','+ glatlng.lng());
   });
-  google.maps.event.addListener(gmap, 'rightclick', function(evt){
+  google.maps.event.addListener(gmap, optsMap.posevent, function(evt){
     var glatlng = evt.latLng;
     gmarker.setPosition(glatlng);
     gmap.panTo(glatlng);

@@ -4,7 +4,7 @@
  * @description upgrades template variable by showing an interactive Google Map and autocompleted geolocation search field
  * @author Danilo Cuculić (eoler@castus.me)
  *
- * @param $options {string} - parameters passed to map UI
+ * @param $config {array} - parameters passed to map UI
  */
 function mm_widget_googlemap($field, $roles='', $templates='', array $config=null) {
  global $modx, $mm_fields, $modx_lang_attribute;
@@ -12,6 +12,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
     'width' => "auto",
     'height' => "450",
     'center' => "52.5,13.5", // default: Rijeka, Croatia
+    'posevent' => "rightclick",
     'gmapOptions' => array(
       'minZoom' => 5,
       'zoom' => 15,
@@ -40,14 +41,16 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
       elmfield.parents('.tab-page:first').append(elmsection);
       elmfield.insertBefore('.mmwidgetGoogleMap_{$fieldName}');
       \$j('<input type=\"text\" id=\"geoloc_{$fieldName}\" name=\"geoloc_{$fieldName}\" tvtype=\"text\" style=\"width:60%; float:right;\">').insertAfter(elmfield);
-      window.pagemapsloaded = function(){ googlemaptv('{$fieldName}', elmsection, {$jsopts}); };
-    function loadGmapscript(){
-      var script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = '//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places';
-      document.body.appendChild(script);
-    }
-    window.onload = loadGmapscript;\n";
+      window.pagemapsloaded = function(){
+        googlemaptv('{$fieldName}', elmsection, {$jsopts});
+      };
+      function loadGmapscript(){
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = '//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places';
+        document.body.appendChild(script);
+      }
+      window.onload = loadGmapscript;\n";
     $evt->output($output);
 	}
 	

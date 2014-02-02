@@ -4,7 +4,7 @@ GoogleMaps widget for ManagerManager plugin
 Integrates interactive map widget into MODX CMF backend resource management
 including two-way synchronization with the geolocation template variable
 and autocompleting search field based on Places library for GoogleMaps.
-Requires PHP5.3+
+Requires PHP 5.3+ and ManagerManager 0.3+
 
 
 Installation
@@ -22,12 +22,12 @@ mm_widget_googlemap("tplvar_name", "role_id", "template_ids", "options_arr");
 Contributors
 ------------
 
-### Oori
-* initial GoogleMaps v2 API widget prototype
-### DivanDesign (http://code.divandesign.biz/modx/mm_ddgmap)
-* backend UI styling
-### UbiLabs (https://github.com/ubilabs/geocomplete)
-* GeoComplete jQuery plugin
+* Oori (http://forums.modx.com/u/oori)
+    - initial GoogleMaps v2 API widget prototype
+* DivanDesign (http://code.divandesign.biz/modx/mm_ddgmap)
+    - backend UI styling
+* UbiLabs (https://github.com/ubilabs/geocomplete)
+    - GeoComplete jQuery plugin
 
 
 Changelog
