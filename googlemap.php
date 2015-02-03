@@ -1,6 +1,6 @@
 <?php
 /* mm_widget_googlemap
- * @version 1.0.0
+ * @version 1.0.2
  * @description upgrades template variable by showing an interactive Google Map and autocompleted geolocation search field
  * @author Danilo Cuculić (eoler@castus.me)
  *
@@ -45,13 +45,7 @@ function mm_widget_googlemap($field, $roles='', $templates='', array $config=nul
       window.pagemapsloaded = function(){
         googlemaptv('{$fieldName}', elmsection, {$jsopts});
       };
-      function loadGmapscript(){
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = '//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places{$gapikey_url}';
-        document.body.appendChild(script);
-      }
-      window.onload = loadGmapscript;\n";
+      \$j.getScript('//maps.google.com/maps/api/js?v=3&sensor=false&callback=pagemapsloaded&language={$modx_lang_attribute}&libraries=places{$gapikey_url}');\n";
     $evt->output($output);
 	}
 	

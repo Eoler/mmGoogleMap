@@ -33,6 +33,10 @@ Contributors
 Changelog
 ---------
 
+### 1.0.2 (2015-02-03)
+- simplified async GMaps API loading 
+- upgraded Geocomplete plugin to 1.6.4
+
 ### 1.0.1 (2014-02-02)
 - parametrized GoogleMaps API loading with key (gapikey)
 - added GoogleMaps marker positioning event config option (default: rightclick)

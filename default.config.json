@@ -1,0 +1,13 @@
+{
+  "width": "auto",
+  "height": "450",
+  "center": "52.5,13.5",
+  "posevent": "rightclick",
+  "gmapOptions": {
+    "minZoom": 15,
+    "zoom": 15,
+    "maxZoom": 25,
+    "draggable": true,
+    "scrollwheel": true
+  }
+}
