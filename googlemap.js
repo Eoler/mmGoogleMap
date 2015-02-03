@@ -44,15 +44,15 @@ function googlemaptv(fldName, elmSection, optsMap) {
 
 
 /**
- * jQuery Geocoding and Places Autocomplete Plugin - V 1.4.1
+ * jQuery Geocoding and Places Autocomplete Plugin - V 1.6.4
  *
- * @author Martin Kleppe <kleppe@ubilabs.net>, 2012
- * @author Ubilabs http://ubilabs.net, 2012
+ * @author Martin Kleppe <kleppe@ubilabs.net>, 2014
+ * @author Ubilabs http://ubilabs.net, 2014
  * @license MIT License <http://www.opensource.org/licenses/mit-license.php>
  */
 
 // # $.geocomplete()
-// ## jQuery Geocoding and Places Autocomplete Plugin - V 1.4.1
+// ## jQuery Geocoding and Places Autocomplete Plugin
 //
 // * https://github.com/ubilabs/geocomplete/
 // * by Martin Kleppe <kleppe@ubilabs.net>
@@ -66,6 +66,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
   // * `details` - The container that should be populated with data. Defaults to `false` which ignores the setting.
   // * `location` - Location to initialize the map on. Might be an address `string` or an `array` with [latitude, longitude] or a `google.maps.LatLng`object. Default is `false` which shows a blank map.
   // * `bounds` - Whether to snap geocode search to map bounds. Default: `true` if false search globally. Alternatively pass a custom `LatLngBounds object.
+  // * `autoselect` - Automatically selects the highlighted item or the first item from the suggestions list on Enter.
   // * `detailsAttribute` - The attribute's name to use as an indicator. Default: `"name"`
   // * `mapOptions` - Options to pass to the `google.maps.Map` constructor. See the full list [here](http://code.google.com/apis/maps/documentation/javascript/reference.html#MapOptions).
   // * `mapOptions.zoom` - The inital zoom level. Default: `14`
@@ -76,6 +77,8 @@ function googlemaptv(fldName, elmSection, optsMap) {
   // * `markerOptions.disabled` - Do not show marker. Default: `false`. Set to true to disable marker.
   // * `maxZoom` - The maximum zoom level too zoom in after a geocoding response. Default: `16`
   // * `types` - An array containing one or more of the supported types for the places request. Default: `['geocode']` See the full list [here](http://code.google.com/apis/maps/documentation/javascript/places.html#place_search_requests).
+  // * `blur` - Trigger geocode when input loses focus.
+  // * `geocodeAfterResult` - If blur is set to true, choose whether to geocode if user has explicitly selected a result before blur.
 
   var defaults = {
     bounds: true,
@@ -83,6 +86,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
     map: false,
     details: false,
     detailsAttribute: "name",
+    autoselect: true,
     location: false,
 
     mapOptions: {
@@ -97,7 +101,8 @@ function googlemaptv(fldName, elmSection, optsMap) {
 
     maxZoom: 16,
     types: ['geocode'],
-    blur: false
+    blur: false,
+    geocodeAfterResult: false
   };
 
   // See: [Geocoding Types](https://developers.google.com/maps/documentation/geocoding/#Types)
@@ -112,7 +117,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
 
   // See: [Places Details Responses](https://developers.google.com/maps/documentation/javascript/places#place_details_responses)
   // on Google Developers.
-  var placesDetails = ("id url website vicinity reference name rating " +
+  var placesDetails = ("id place_id url website vicinity reference name rating " +
     "international_phone_number icon formatted_phone_number").split(" ");
 
   // The actual plugin constructor.
@@ -161,6 +166,12 @@ function googlemaptv(fldName, elmSection, optsMap) {
         'click',
         $.proxy(this.mapClicked, this)
       );
+
+      google.maps.event.addListener(
+        this.map,
+        'zoom_changed',
+        $.proxy(this.mapZoomed, this)
+      );
     },
 
     // Add a marker with the provided `markerOptions` but only
@@ -185,6 +196,9 @@ function googlemaptv(fldName, elmSection, optsMap) {
     // to fall back when the autocompleter does not return a value.
     initGeocoder: function(){
 
+      // Indicates is user did select a result from the dropdown.
+      var selected = false;
+
       var options = {
         types: this.options.types,
         bounds: this.options.bounds === true ? null : this.options.bounds,
@@ -192,7 +206,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
       };
 
       if (this.options.country){
-        options.componentRestrictions = {country: this.options.country}
+        options.componentRestrictions = {country: this.options.country};
       }
 
       this.autocomplete = new google.maps.places.Autocomplete(
@@ -219,16 +233,28 @@ function googlemaptv(fldName, elmSection, optsMap) {
         if (event.keyCode === 13){ return false; }
       });
 
+      // Assume that if user types anything after having selected a result,
+      // the selected location is not valid any more.
+      if (this.options.geocodeAfterResult === true){
+        this.$input.bind('keypress', $.proxy(function(){
+          if (event.keyCode != 9 && this.selected === true){
+              this.selected = false;
+          }
+        }, this));
+      }
+
       // Listen for "geocode" events and trigger find action.
       this.$input.bind("geocode", $.proxy(function(){
         this.find();
       }, this));
 
-      // Trigger find action when input element is blured out.
-      // (Usefull for typing partial location and tabing to the next field
+      // Trigger find action when input element is blurred out and user has
+      // not explicitly selected a result.
+      // (Useful for typing partial location and tabbing to the next field
       // or clicking somewhere else.)
       if (this.options.blur === true){
         this.$input.blur($.proxy(function(){
+          if (this.options.geocodeAfterResult === true && this.selected === true){ return; }
           this.find();
         }, this));
       }
@@ -321,13 +347,13 @@ function googlemaptv(fldName, elmSection, optsMap) {
 
       var selected = '';
       // Check if any result is selected.
-      if ($(".pac-item-selected")['0']) {
+      if ($(".pac-item-selected")[0]) {
         selected = '-selected';
       }
 
       // Get the first suggestion's text.
-      var $span1 = $(".pac-container .pac-item" + selected + ":first span:nth-child(2)").text();
-      var $span2 = $(".pac-container .pac-item" + selected + ":first span:nth-child(3)").text();
+      var $span1 = $(".pac-container:last .pac-item" + selected + ":first span:nth-child(2)").text();
+      var $span2 = $(".pac-container:last .pac-item" + selected + ":first span:nth-child(3)").text();
 
       // Adds the additional information, if available.
       var firstResult = $span1;
@@ -367,7 +393,6 @@ function googlemaptv(fldName, elmSection, optsMap) {
     // If the geometry has a viewport, the map zooms out to fit the bounds.
     // Additionally it updates the marker position.
     center: function(geometry){
-
       if (geometry.viewport){
         this.map.fitBounds(geometry.viewport);
         if (this.map.getZoom() > this.options.maxZoom){
@@ -384,7 +409,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
       }
     },
 
-    // Update the elements based on a single places or geoocoding response
+    // Update the elements based on a single places or geocoding response
     // and trigger the "geocode:result" event on the input.
     update: function(result){
 
@@ -412,8 +437,11 @@ function googlemaptv(fldName, elmSection, optsMap) {
       // Create a simplified version of the address components.
       $.each(result.address_components, function(index, object){
         var name = object.types[0];
-        data[name] = object.long_name;
-        data[name + "_short"] = object.short_name;
+
+        $.each(object.types, function(index, name){
+          data[name] = object.long_name;
+          data[name + "_short"] = object.short_name;
+        });
       });
 
       // Add properties of the places details.
@@ -468,6 +496,10 @@ function googlemaptv(fldName, elmSection, optsMap) {
         this.trigger("geocode:click", event.latLng);
     },
 
+    mapZoomed: function(event) {
+      this.trigger("geocode:zoom", this.map.getZoom());
+    },
+
     // Restore the old position of the marker to the last now location.
     resetMarker: function(){
       this.marker.setPosition(this.data.location);
@@ -479,12 +511,15 @@ function googlemaptv(fldName, elmSection, optsMap) {
     // If the place has no geometry it passes it to the geocoder.
     placeChanged: function(){
       var place = this.autocomplete.getPlace();
+      this.selected = true;
 
       if (!place.geometry){
-        // Automatically selects the highlighted item or the first item from the
-        // suggestions list.
-        var autoSelection = this.selectFirstResult();
-        this.find(autoSelection);
+        if (this.options.autoselect) {
+          // Automatically selects the highlighted item or the first item from the
+          // suggestions list.
+          var autoSelection = this.selectFirstResult();
+          this.find(autoSelection);
+        }
       } else {
         // Use the input text if it already gives geometry.
         this.update(place);
@@ -521,7 +556,7 @@ function googlemaptv(fldName, elmSection, optsMap) {
         // Prevent against multiple instantiations.
         var instance = $.data(this, attribute);
         if (!instance) {
-          instance = new GeoComplete( this, options )
+          instance = new GeoComplete( this, options );
           $.data(this, attribute, instance);
         }
       });
